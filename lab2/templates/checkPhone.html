@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="w-100 h-100">
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="w-50 bg-light rounded border border-primary">
+                <div class="w-100 h-100 p-3">
+                    <div class="d-flex flex-column gap-3">
+                        {% if checked %}
+                        	<div class="{% if success %}bg-success{% else %}bg-danger{% endif %} w-100">
+                                <div class="d-flex justify-content-center rounded align-items-center p-2">
+                                    <p class="fs-3 text-light m-0">
+                                        {{ phone }}
+                                    </p>
+                                </div>
+                            </div>
+
+                        {% else %}
+                            <h1 class="fs-4 m-0 text-dark">
+                                Проверка номера телефона
+                            </h1>
+                        {% endif %}
+
+                        {% if message %}
+                            <p class="m-0 fs-4 text-danger">
+                                {{ message }}
+                            </p>
+                        {% endif %}
+
+                        <form method="post"
+                              class="d-flex flex-column align-items-start gap-2">
+                            <input type="tel"
+                                   name="phone_number"
+                                   class="form-control"
+                                   placeholder="Для проверки введите телефон">
+
+                            <button type="submit" class="btn btn-primary">
+                                Проверить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <footer>
+        <div class="bg-dark w-full">
+            <div class="container w-100">
+                <div class="w-100 navbar justify-content-between">
+                    <p class="m-0 fs-4 text-white">
+                        Мурахтанов Павел Иговерич
+                    </p>
+
+                    <p class="m-0 fs-4 text-white">
+                        221-332
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+{% endblock %}
