@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% from 'pagination.html' import render_pagination %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-5 text-center text-uppercase font-weight-bold">Все отзывы</h2>
+
+    <form class="mb-2 mt-3 row align-items-center" method="GET" style="gap: 20px;">
+        <select name="sorted-at" class="form-select" aria-label="Default select example" style="width: 25%;">
+            <option 
+                value="by-new"
+                {% if sortedByValue == "by-new" %}selected{% endif %}
+                >
+                По новизне
+            </option>
+            <option 
+                value="firstly-good" 
+                {% if sortedByValue == "firstly-good" %}selected{% endif %}
+                >
+                Сначала положительные
+            </option>
+            <option 
+                value="firstly-bad"
+                {% if sortedByValue == "firstly-bad" %}selected{% endif %}
+                >
+                Сначала отрицательные
+            </option>
+        </select>
+
+        <div class="col-md-2 my-3 align-self-end">
+            <button type="submit" class="btn btn-dark w-100 mt-auto">Применить</button>
+        </div>
+    </form>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="table-dark" scope="col" style="text-align: center; vertical-align: middle">Имя пользователя</th>
+                <th class="table-dark" scope="col" style="text-align: center; vertical-align: middle">Дата отзыва</th>
+                <th class="table-dark" scope="col" style="text-align: center; vertical-align: middle">Выставленная оценка</th>
+                <th class="table-dark" scope="col" style="text-align: center; vertical-align: middle;">Текст отзыва</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for review in allReviewData %}
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">
+                        {{ review.last_name }} 
+                        {{ review.first_name }} 
+                        {% if review.middle_name is not none %}
+                            {{ review.middle_name }}
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        {{ review.created_at }}
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        {{ review.rating }}
+                    </td>
+                    <td>{{ review.text }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mb-5">
+        {{ render_pagination(pagination, request.endpoint, params) }}
+    </div>
+
+    {% if current_user.is_authenticated and check_review %}
+        <div class="container mt-5">
+            <h2 class="mb-5 text-center text-uppercase font-weight-bold">Написать отзыв</h2>
+
+            <form class="mb-5 mt-3 row align-items-center" method="POST" style="gap: 20px;">
+                <textarea 
+                    id="textarea" 
+                    rows="5"
+                    name="text-area"
+                    style="border: 1px solid black; border-radius: 5px; padding: 12px 12px"
+                    placeholder="Введите текст" required></textarea>
+
+                <select name="select-mark" class="form-select" aria-label="Default select example" style="width: 25%;">
+                    <option value="5">Отлично</option>
+                    <option value="4">Хорошо</option>
+                    <option value="3">Удовлетворительно</option>
+                    <option value="2">Неудовлетворительно</option>
+                    <option value="1">Плохо</option>
+                    <option value="0">Ужасно</option>
+                </select>
+
+                <div class="col-md-2 my-3 align-self-end">
+                    <button type="submit" class="btn btn-dark w-100 mt-auto">Отправить отзыв</button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

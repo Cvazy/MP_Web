@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="title-area position-relative" style="background-image: url({{course.image_id.url}});">
+    <div class="h-100 w-100 py-5 d-flex text-center position-absolute" style="background-color: rgba(0, 0, 0, 0.65);">
+        <div class="m-auto">
+            <h1 class="title mb-3 font-weight-bold">{{ course.name }}</h1>
+            <p class="mb-3 mx-auto">
+                {{ category.name }} | <span>★</span> <span>{{ "%.2f" | format(course.rating) }}</span>
+            </p>
+            <div class="container">
+                <p class="description w-75 mb-5 mx-auto">
+                    {{ course.short_desc }}
+                </p>
+            </div>
+            {% if current_user.is_authenticated %}
+                <a href="#" class="btn btn-outline-light btn-lg">Перейти к материалам курса</a>
+            {% else %}
+                <button class="btn btn-outline-light btn-lg" disabled>Записаться</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    {% if course.full_desc is not none %}
+        <section class="about mb-5">
+            <h2 class="mb-3 text-center text-uppercase font-weight-bold">О курсе</h2>
+            <p>{{ course.full_desc }}</p>
+        </section>
+    {% endif %}
+
+    <section class="program mb-5">
+        <h2 class="mb-3 text-center text-uppercase font-weight-bold">Программа курса</h2>
+
+        {% for theme in course.themes %}
+            <div class="card mb-3">
+                <div class="card-header d-flex align-items-center">
+                    <h5 class="mb-0">Тема {{ loop.index }}. {{ theme.name }}</h5>
+                    {% if current_user.is_authenticated and current_user.id == course.author_id %}
+                        <button class="btn btn-primary btn-sm ms-auto" title="Добавить пункт" data-parent-id="{{ theme.id }}">+</button>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% set outer_loop = loop %}
+                    {% for subtheme in theme.subthemes %}
+                        <div class="d-flex align-items-center">
+                            <p class="card-text mb-3">{{ outer_loop.index }}.{{ loop.index }}. {{ subtheme.name }}</p>
+                            {% if current_user.is_authenticated and current_user.id == course.author_id %}
+                            <a href="#" class="btn btn-sm ms-auto" title="Добавить материал"
+                                data-parent-id="{{ theme.id }}">+</a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+        {% if current_user.is_authenticated and current_user.id == course.author_id %}
+            <div class="text-center">
+                <button type="button" class="btn btn-dark">
+                    Добавить тему
+                </button>
+            </div>
+        {% endif %}
+    </section>
+
+    {% if reviewData.count() > 0 %}
+        <section class="table mb-5">
+            <h2 class="mb-3 text-center text-uppercase font-weight-bold">Отзывы</h2>
+
+            <table class="table table-bordered mt-5">
+                <thead>
+                    <tr>
+                        <th class="table-dark" scope="col" style="text-align: center;">Имя пользователя</th>
+                        <th class="table-dark" scope="col" style="text-align: center;">Дата отзыва</th>
+                        <th class="table-dark" scope="col" style="text-align: center;">Выставленная оценка</th>
+                        <th class="table-dark" scope="col" style="text-align: center; vertical-align: middle;">Текст отзыва</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in reviewData %}
+                        <tr>
+                            <td style="text-align: center; vertical-align: middle;">
+                                {{ review.user.last_name }} 
+                                {{ review.user.first_name }} 
+                                {% if review.user.middle_name is not none %}
+                                    {{ review.user.middle_name }}
+                                {% endif %}
+                            </td>
+                            <td style="text-align: center; vertical-align: middle;">
+                                {{ review.created_at }}
+                            </td>
+                            <td style="text-align: center; vertical-align: middle;">
+                                {{ review.rating }}
+                            </td>
+                            <td>{{ review.text }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div style="text-align: center;">
+                <a 
+                    class="btn btn btn-outline-dark btn-lg mb-5" 
+                    href="{{ url_for('courses.reviews', course_id = course.id) }}"
+                    >
+                    Все отзывы
+                </a>
+            </div>
+        </section>
+    {% endif %}  
+    
+    {% if current_user.is_authenticated and check_review %}
+        <div class="container mt-5">
+            <h2 class="mb-5 text-center text-uppercase font-weight-bold">Написать отзыв</h2>
+
+            <form class="mb-5 mt-3 row align-items-center" method="POST" style="gap: 20px;">
+                <textarea 
+                    id="textarea" 
+                    rows="5"
+                    name="text-area"
+                    style="border: 1px solid black; border-radius: 5px; padding: 12px 12px"
+                    placeholder="Введите текст" required></textarea>
+
+                <select name="select-mark" class="form-select" aria-label="Default select example" style="width: 25%;">
+                    <option value="5">Отлично</option>
+                    <option value="4">Хорошо</option>
+                    <option value="3">Удовлетворительно</option>
+                    <option value="2">Неудовлетворительно</option>
+                    <option value="1">Плохо</option>
+                    <option value="0">Ужасно</option>
+                </select>
+
+                <div class="col-md-2 my-3 align-self-end">
+                    <button type="submit" class="btn btn-dark w-100 mt-auto">Отправить отзыв</button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+</div>
+    
+
+{% endblock %}

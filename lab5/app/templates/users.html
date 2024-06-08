@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+    <!-- Modal -->
+    <div class="modal" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeModalLabel">Предупреждение</h5>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить пользователя <span>{{ name }}</span>
+                </div>
+                <form action="delete" method="post" class="modal-footer">
+                    <button type="button" class="btn btn-secondary">Нет</button>
+                    <input type="hidden" name="user_id" id="user_delete_id" />
+                    <button type="submit" class="btn btn-primary">Да</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <h1>Список пользователей</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Номер</th>
+                <th>Логин</th>
+                <th>ФИО</th>
+                <th>Роль</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users_list %}
+                <tr class="user_row">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ user.login }}</td>
+                    <td class="user_row__name">
+                        {{ user.last_name }} {{ user.first_name }} {{ user.middle_name }}
+                    </td>
+                    <td>{{ user.role_name or '' }}</td>
+
+                    {% if current_user.can('edit', user) %}
+                        <td>
+                            <a class="btn btn-success" href="{{ url_for('users.view', user_id = user.id) }}">Просмотр</a>
+                        </td>
+                    {% endif %}
+
+                    {% if current_user.is_authenticated and current_user.can('edit', user) %}
+                        <td>
+                            <a class="btn btn-primary" href="{{ url_for('users.edit', user_id = user.id) }}">Редактирование</a>
+                        </td>
+                    {% endif %}
+
+                    {% if current_user.can('delete', user) %}
+                    <td class="user_row__delete">
+                        <button 
+                            type="button" 
+                            class="btn btn-danger" 
+                        >
+                            Удаление
+                        </button>
+
+                        <div class="d-none">{{ user.id }}</div>
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if current_user.is_authenticated and current_user.can('create')%}
+        <a class="btn btn-primary" href="{{ url_for('users.new') }}">Добавить пользователя</a>
+    {% endif %}
+    
+{% endblock %}

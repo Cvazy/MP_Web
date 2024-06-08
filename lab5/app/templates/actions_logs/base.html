@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link {% if request.endpoint == 'action_logs.index' %}active{% endif %}" href="{{ url_for('action_logs.index') }}"> Журнал действий </a>
+    </li>
+    {% if current_user.is_authenticated %}
+        {% if current_user.can('show_statistics', user) %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'action_logs.stat_users' %}active{% endif %}" href="{{ url_for('action_logs.stat_users') }}"> Статистика по пользователям </a>
+        </li>
+        {% endif %}
+    {% endif %}
+    
+    {% if current_user.is_authenticated %}
+        {% if current_user.can('show_statistics', user) %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'action_logs.stat_pages' %}active{% endif %}" href="{{ url_for('action_logs.stat_pages') }}">Статистика по страницам</a>
+        </li>
+        {% endif %}
+    {% endif %}
+</ul>
+
+{% block tab_content %}
+
+{% endblock %}
+
+{% endblock %}
+

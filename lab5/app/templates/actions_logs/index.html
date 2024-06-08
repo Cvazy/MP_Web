@@ -1,0 +1,77 @@
+{% extends 'actions_logs/base.html' %}
+
+{% block tab_content %}
+<h1>Журнал действий пользователей</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Номер лога</th>
+            <th>Логин пользователя</th>
+            <th>Страница</th>
+            <th>Дата</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                    {% if log.login is none %}
+                        <td>Аноним</td>
+                    {% else %}
+                        <td>{{ log.login }}</td>
+                    {% endif %}
+                <td>{{ log.path }}</td>
+                <td>{{ log.created_at }}</td>
+            </tr>
+        {% endfor %}
+    </tbody> 
+</table>
+
+<div class="d-flex justify-content-between align-items-center gap-3 w-100">
+    {% if count_notes > 10 %}
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% if start_page != 1 %}
+                    <li class="page-item">
+                        <a 
+                            class="page-link" 
+                            href="{{url_for(request.endpoint, page=1)}}"
+                        >
+                            First page
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for i in range(start_page, next_page + 1) %}
+                    <li class="page-item">
+                        <a 
+                            class="page-link" 
+                            href="{{url_for(request.endpoint, page=i)}}"
+                        >
+                            {{i}}
+                        </a>
+                    </li>
+                {% endfor %}
+
+                {% if next_page != end_page %}
+                <li class="page-item">
+                    <a 
+                        class="page-link" 
+                        href="{{url_for(request.endpoint, page=end_page)}}"
+                    >
+                        Last page
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+    <a 
+        class="btn btn-primary" 
+        href="{{ url_for('action_logs.index', download_csv=True) }}" 
+        >
+        Экспорт в CSV
+    </a>
+</div>
+{% endblock %}
